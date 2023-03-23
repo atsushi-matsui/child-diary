@@ -37,12 +37,18 @@ func main() {
 	fmt.Println("Texts:")
 	fmt.Println(text)
 
+	blog, err := domain.NewBlog()
+	if err != nil {
+		log.Fatalf("Failed to new blog: %v", err)
+	}
+	content := text + blog.ToText()
+
 	diaryFile, err := domain.NewFile(string(os.Getenv("DIARY_DIR")), fileName, "md")
 	if err != nil {
 		log.Fatalf("Opening file: %v", err)
 	}
 	defer diaryFile.Close()
-	diaryFile.Write(text)
+	diaryFile.Write(content)
 }
 
 func loadEnv() {
