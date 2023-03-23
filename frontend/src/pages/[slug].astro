@@ -1,0 +1,31 @@
+---
+import { getCollection,CollectionEntry } from 'astro:content';
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({
+    params: { slug: post.slug }, props: { post },
+  }));
+}
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+const { post } = Astro.props;
+const { Content } = await post.render();
+---
+
+<html lang="ja">
+	<head>
+		<meta charset="utf-8" />
+		<title>Astro</title>
+	</head>
+	<body>
+		<h1>{post.data.title}</h1>
+		<time datetime={post.data.pubDate.toISOString()}>
+			{new Intl.DateTimeFormat('ja-JP').format(post.data.pubDate)}
+		</time>
+		<Content />
+		{post.data.tags && post.data.tags.map((tag:any) => (
+			<strong>{tag}</strong>
+		))}
+	</body>
+</html>

@@ -1,0 +1,24 @@
+---
+import { getCollection } from 'astro:content';
+const posts = await getCollection('blog');
+---
+
+<html lang="ja">
+	<head>
+		<meta charset="utf-8" />
+		<title>Astro</title>
+	</head>
+	<body>
+		<ul>
+			{posts.map(post => (
+			  <li>
+				<time datetime={post.data.pubDate.toISOString()}>
+				  {new Intl.DateTimeFormat('ja-JP').format(post.data.pubDate)}
+				</time>
+				<br />
+				<a href={`/${post.slug}`}>{post.data.title}</a>
+			  </li>
+			))}
+		  </ul>
+	</body>
+</html>
