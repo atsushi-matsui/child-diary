@@ -2,6 +2,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -11,12 +12,15 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// Sets the name of the image file to annotate.
-const fileName = "sample_02"
-
 func main() {
 	// read env file
 	loadEnv()
+
+	// get arg
+	fileName := getArg()
+	if fileName == "" {
+		log.Fatalf("Not found arg")
+	}
 
 	client, err := myGoogle.NewClient()
 	if err != nil {
@@ -37,11 +41,11 @@ func main() {
 	fmt.Println("Texts:")
 	fmt.Println(text)
 
-	blog, err := domain.NewBlog()
+	blog, err := domain.NewBlog(fileName, fileName)
 	if err != nil {
 		log.Fatalf("Failed to new blog: %v", err)
 	}
-	content := text + blog.ToText()
+	content := blog.ToText() + text
 
 	diaryFile, err := domain.NewFile(string(os.Getenv("DIARY_DIR")), fileName, "md")
 	if err != nil {
@@ -49,6 +53,13 @@ func main() {
 	}
 	defer diaryFile.Close()
 	diaryFile.Write(content)
+}
+
+func getArg() string{
+	arg := flag.String("argument", "", "argument from Makefile")
+	flag.Parse()
+
+	return *arg
 }
 
 func loadEnv() {
